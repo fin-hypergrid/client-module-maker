@@ -8,13 +8,8 @@ module.exports = function(gulp, manifest) {
         Wrapper  = require('fin-hypergrid-client-module-wrapper');
 
     var srcDir   = './',
-        buildDir = './build/',
-        wrapper  = new Wrapper(manifest.name, manifest.version),
-        verParts = manifest.version.split('.');
-
-    for (var index = 1, verDirs = []; index <= verParts.length; index++) {
-        verDirs.push(buildDir.replace('/', '/' + verParts.slice(0, index).join('.') + '/'));
-    }
+        buildDir = './' + version + '/build/',
+        wrapper  = new Wrapper(manifest.name, manifest.version);
 
     gulp.task('lint', function() {
         return gulp.src('index.js')
@@ -39,11 +34,6 @@ module.exports = function(gulp, manifest) {
                 )
             )
             .pipe(gulp.dest(buildDir));
-
-        // output copies to each of MAJOR.MINOR.PATCH/build, MAJOR.MINOR/build, MAJOR/build
-        verDirs.forEach(function(dir) {
-            stream.pipe(gulp.dest(dir));
-        });
     });
 
 };
