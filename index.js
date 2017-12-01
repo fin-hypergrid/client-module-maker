@@ -8,7 +8,7 @@ module.exports = function(gulp, manifest) {
         Wrapper  = require('fin-hypergrid-client-module-wrapper');
 
     var srcDir   = './',
-        buildDir = './' + version + '/build/',
+        buildDir = './' + manifest.version + '/build/',
         wrapper  = new Wrapper(manifest.name, manifest.version);
 
     gulp.task('lint', function() {
