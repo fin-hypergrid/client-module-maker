@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(gulp, manifest) {
+module.exports = function(gulp, manifest, wrapper) {
 
     var $$       = require('gulp-load-plugins')(),
         pipe     = require('multipipe'),
@@ -12,8 +12,9 @@ module.exports = function(gulp, manifest) {
         Wrapper  = require('fin-hypergrid-client-module-wrapper');
 
     var buildDir = manifest.version + '/build/',
-        testfile = fs.existsSync('test.js') && 'test.js' || fs.existsSync('test/index.js') && 'test/index.js',
-        wrapper  = new Wrapper(manifest.name, manifest.version);
+        testfile = fs.existsSync('test.js') && 'test.js' || fs.existsSync('test/index.js') && 'test/index.js';
+
+    wrapper = wrapper || new Wrapper(manifest.name, manifest.version);
 
     gulp.task('lint', function() {
         return gulp.src('index.js')
