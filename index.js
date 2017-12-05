@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(gulp, manifest, wrapper) {
+module.exports = function(gulp, options) {
 
     var $$       = require('gulp-load-plugins')(),
         pipe     = require('multipipe'),
@@ -11,10 +11,9 @@ module.exports = function(gulp, manifest, wrapper) {
         path     = require('path'),
         Wrapper  = require('fin-hypergrid-client-module-wrapper');
 
-    var buildDir = manifest.version + '/build/',
-        testfile = fs.existsSync('test.js') && 'test.js' || fs.existsSync('test/index.js') && 'test/index.js';
-
-    wrapper = wrapper || new Wrapper(manifest.name, manifest.version);
+    var { version, name, wrapper, tasks } = options || {},
+        buildDir = version + '/build/',
+        wrapper = wrapper || new Wrapper(name, version);
 
     gulp.task('lint', function() {
         return gulp.src('index.js')
@@ -24,8 +23,14 @@ module.exports = function(gulp, manifest, wrapper) {
     });
 
     gulp.task('test', function(cb) {
-        return gulp.src(testfile)
-            .pipe($$.mocha({reporter: 'spec'}));
+        var testfile = fs.existsSync('test.js') && 'test.js' ||
+            fs.existsSync('test/index.js') && 'test/index.js';
+        if (testfile) {
+            return gulp.src(testfile)
+                .pipe($$.mocha({reporter: 'spec'}));
+        } else {
+            return cb();
+        }
     });
 
     gulp.task('build', function() {
@@ -35,10 +40,10 @@ module.exports = function(gulp, manifest, wrapper) {
             .pipe(
                 $$.mirror(
                     pipe(
-                        $$.rename(manifest.name + '.js')
+                        $$.rename(name + '.js')
                     ),
                     pipe(
-                        $$.rename(manifest.name + '.min.js'),
+                        $$.rename(name + '.min.js'),
                         $$.uglify().on('error', util.log)
                     )
                 )
@@ -55,11 +60,11 @@ module.exports = function(gulp, manifest, wrapper) {
         });
     });
 
-    gulp.task('default', function(callback) {
-        if (testfile) {
-            runSeq('lint', 'test', 'build', callback);
-        } else {
-            runSeq('lint', 'build', callback);
-        }
-    });
+    if (tasks) {
+        tasks = Array.isArray(tasks) ? tasks : [tasks];
+
+        gulp.task('default', function(callback) {
+            runSeq(...tasks, callback);
+        });
+    }
 };
