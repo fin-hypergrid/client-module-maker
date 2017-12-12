@@ -11,9 +11,13 @@ module.exports = function(gulp, options) {
         path     = require('path'),
         Wrapper  = require('fin-hypergrid-client-module-wrapper');
 
-    var { version, name, wrapper, tasks } = options || {},
+    options = options || {};
+
+    var name = options.name,
+        version = options.version,
+        tasks = options.tasks,
         buildDir = version + '/build/',
-        wrapper = wrapper || new Wrapper(name, version);
+        wrapper = new Wrapper(options);
 
     gulp.task('lint', function() {
         return gulp.src('index.js')
@@ -64,7 +68,7 @@ module.exports = function(gulp, options) {
         tasks = Array.isArray(tasks) ? tasks : [tasks];
 
         gulp.task('default', function(callback) {
-            runSeq(...tasks, callback);
+            runSeq(tasks.concat(callback));
         });
     }
 };
