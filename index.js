@@ -68,7 +68,7 @@ module.exports = function(gulp, options) {
         tasks = Array.isArray(tasks) ? tasks : [tasks];
 
         gulp.task('default', function(callback) {
-            runSeq(tasks.concat(callback));
+            runSeq.apply(null, tasks.concat(callback));
         });
     }
 };
